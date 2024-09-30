@@ -12,7 +12,7 @@ namespace Ecommerce.API.Abstraction.IRepositories
         /// Adds a new product to the repository.
         /// </summary>
         /// <param name="product">The product to create</param>
-        ///  <returns>The created product's Id.</returns>
+        /// <returns>The created product's Id.</returns>
         Task<int> AddProductAsync(CreateProductDto product);
 
         /// <summary>

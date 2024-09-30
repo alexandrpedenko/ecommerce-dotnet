@@ -6,7 +6,6 @@ using Ecommerce.API.Contracts.Requests.Products;
 using Ecommerce.API.Contracts.Responses.Common;
 using Ecommerce.API.Contracts.Responses.Products;
 using Ecommerce.API.Domain;
-using Ecommerce.API.Exceptions.Common;
 using Ecommerce.API.Exceptions.Products;
 using Ecommerce.API.Mapping;
 
@@ -24,8 +23,6 @@ namespace Ecommerce.API.Services.Products
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IMapper _mapper = mapper;
 
-        private readonly string errorMessage = "Error during adding product occurred";
-
         /// <inheritdoc />
         public async Task<int> AddProductAsync(AddProductRequestDto product)
         {
@@ -36,9 +33,7 @@ namespace Ecommerce.API.Services.Products
                 Price = product.Price
             });
 
-            return productId > 0
-                ? productId
-                : throw new InternalServerErrorException(errorMessage);
+            return productId;
         }
 
         /// <inheritdoc />
@@ -66,11 +61,7 @@ namespace Ecommerce.API.Services.Products
                 Price = product.Price
             };
 
-            var isUpdated = await _productRepository.UpdateProductAsync(id, productForUpdate);
-
-            return !isUpdated
-                ? throw new InternalServerErrorException(errorMessage)
-                : isUpdated;
+            return await _productRepository.UpdateProductAsync(id, productForUpdate);
         }
 
         /// <inheritdoc />
@@ -81,11 +72,7 @@ namespace Ecommerce.API.Services.Products
                 throw new ProductNotFoundException(id);
             }
 
-            var isDeleted = await _productRepository.DeleteProductAsync(id);
-
-            return !isDeleted
-                ? throw new InternalServerErrorException(errorMessage)
-                : isDeleted;
+            return await _productRepository.DeleteProductAsync(id);
         }
 
         public async Task<PaginatedListResponseDto<GetProductResponseDto>> GetAllProductsAsync(GetListOfProductsRequestDto query)
