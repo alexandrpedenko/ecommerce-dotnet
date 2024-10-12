@@ -1,8 +1,8 @@
-﻿using Ecommerce.API.Abstraction.IRepositories;
-using Ecommerce.API.Contracts.Dtos.Products;
+﻿using Ecommerce.API.Contracts.Dtos.Products;
 using Ecommerce.API.DataEF.Context;
 using Ecommerce.API.DataEF.Converters.ProductConverter;
 using Ecommerce.API.DataEF.Helpers;
+using Ecommerce.API.DataEF.IRepositories;
 using Ecommerce.API.DataEF.Models;
 using Ecommerce.API.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +18,7 @@ namespace Ecommerce.API.DataEF.Repositories
         private readonly EcommerceContext _context = context;
 
         /// <inheritdoc />
-        public async Task<int> AddProductAsync(CreateProductDto product)
+        public async Task<int> AddAsync(CreateProductDto product)
         {
             ProductModel createdProduct = new()
             {
@@ -35,15 +35,16 @@ namespace Ecommerce.API.DataEF.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<Product?> GetProductByIdAsync(int id)
+        public async Task<Product?> GetByIdAsync(int id)
         {
             return await _context.Products
                 .Where(p => p.Id == id)
-                .Select(ProductConverter.ToDomain()).FirstOrDefaultAsync();
+                .Select(ProductConverter.ToDomain())
+                .FirstOrDefaultAsync();
         }
 
         /// <inheritdoc />
-        public async Task<bool> UpdateProductAsync(int id, Product product)
+        public async Task<bool> UpdateAsync(int id, Product product)
         {
             var affectedRows = await _context.Products.Where(p => p.Id == id)
                 .ExecuteUpdateAsync(setters => setters
@@ -61,7 +62,7 @@ namespace Ecommerce.API.DataEF.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<bool> DeleteProductAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var affectedRows = await _context.Products
               .Where(p => p.Id == id)
@@ -71,14 +72,14 @@ namespace Ecommerce.API.DataEF.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Product>> GetAllProductsAsync(GetListOfProductsDto request)
+        public async Task<IEnumerable<Product>> GetAllAsync(GetListOfProductsDto request)
         {
             var query = _context.Products.AsQueryable();
 
             var selectedQuery = query.Select(ProductConverter.ToDomain());
 
-            selectedQuery = GetFilteredProducts(selectedQuery, request);
-            selectedQuery = GetSortedProducts(selectedQuery, request);
+            selectedQuery = GetFiltered(selectedQuery, request);
+            selectedQuery = GetSorted(selectedQuery, request);
 
             selectedQuery = selectedQuery.Skip((request.Page - 1) * (request.PageSize))
                          .Take(request.PageSize);
@@ -86,7 +87,7 @@ namespace Ecommerce.API.DataEF.Repositories
             return await selectedQuery.AsNoTracking().ToListAsync();
         }
 
-        private static IQueryable<Product> GetFilteredProducts(IQueryable<Product> query,
+        private static IQueryable<Product> GetFiltered(IQueryable<Product> query,
             GetListOfProductsDto request)
         {
             if (request.MinPrice.HasValue)
@@ -99,7 +100,7 @@ namespace Ecommerce.API.DataEF.Repositories
                 query = query.Where(p => p.Price <= request.MaxPrice.Value);
             }
 
-            if (!string.IsNullOrEmpty(request.Search))
+            if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 query = query.Where(p => p.Title.Contains(request.Search));
             }
@@ -107,10 +108,10 @@ namespace Ecommerce.API.DataEF.Repositories
             return query;
         }
 
-        private static IQueryable<Product> GetSortedProducts(IQueryable<Product> query,
+        private static IQueryable<Product> GetSorted(IQueryable<Product> query,
             GetListOfProductsDto request)
         {
-            if (!string.IsNullOrEmpty(request.SortBy))
+            if (!string.IsNullOrWhiteSpace(request.SortBy))
             {
                 if (request.SortOrder?.ToLower() == "desc")
                 {

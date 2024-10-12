@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
-using Ecommerce.API.Abstraction.IServices;
 using Ecommerce.API.Contracts.Requests.Products;
 using Ecommerce.API.Exceptions.Common;
+using Ecommerce.API.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers
@@ -24,6 +24,7 @@ namespace Ecommerce.API.Controllers
         /// <exception cref="InternalServerErrorException"></exception>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddProduct([FromBody] AddProductRequestDto product)
         {
@@ -42,6 +43,7 @@ namespace Ecommerce.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetProductById(int id)
         {
@@ -57,6 +59,7 @@ namespace Ecommerce.API.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductRequestDto product)
         {
@@ -72,6 +75,7 @@ namespace Ecommerce.API.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteProduct(int id)
         {

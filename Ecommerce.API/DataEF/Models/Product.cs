@@ -11,7 +11,7 @@
         public int Id { get; set; }
 
         /// <summary>
-        ///  title
+        ///  Title
         /// </summary>
         public required string Title { get; set; }
 

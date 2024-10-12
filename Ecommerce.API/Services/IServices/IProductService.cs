@@ -3,7 +3,7 @@ using Ecommerce.API.Contracts.Responses.Common;
 using Ecommerce.API.Contracts.Responses.Products;
 using Ecommerce.API.Exceptions.Common;
 
-namespace Ecommerce.API.Abstraction.IServices
+namespace Ecommerce.API.Services.IServices
 {
     /// <summary>
     /// Product service interface

@@ -1,11 +1,12 @@
 ﻿using Asp.Versioning;
-using Ecommerce.API.Abstraction.IRepositories;
-using Ecommerce.API.Abstraction.IServices;
 using Ecommerce.API.Contracts.Requests.Products;
 using Ecommerce.API.DataEF.Context;
+using Ecommerce.API.DataEF.IRepositories;
 using Ecommerce.API.DataEF.Repositories;
 using Ecommerce.API.Mapping.ProductProfile;
+using Ecommerce.API.Services.IServices;
 using Ecommerce.API.Services.Products;
+using Ecommerce.API.Validators.Attributes;
 using Ecommerce.API.Validators.Products;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -35,7 +36,10 @@ namespace Ecommerce.API.Extensions
 
             services.AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<ValidateIdAttribute>();
+            });
             services.AddRouting(options =>
             {
                 options.LowercaseUrls = true;
