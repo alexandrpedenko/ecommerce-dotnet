@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using Ecommerce.API.Abstraction.IRepositories;
-using Ecommerce.API.Abstraction.IServices;
 using Ecommerce.API.Contracts.Dtos.Products;
 using Ecommerce.API.Contracts.Requests.Products;
 using Ecommerce.API.Contracts.Responses.Common;
 using Ecommerce.API.Contracts.Responses.Products;
+using Ecommerce.API.DataEF.IRepositories;
 using Ecommerce.API.Domain;
 using Ecommerce.API.Exceptions.Products;
 using Ecommerce.API.Mapping;
+using Ecommerce.API.Services.IServices;
 
 namespace Ecommerce.API.Services.Products
 {
@@ -26,7 +26,7 @@ namespace Ecommerce.API.Services.Products
         /// <inheritdoc />
         public async Task<int> AddProductAsync(AddProductRequestDto product)
         {
-            int productId = await _productRepository.AddProductAsync(new CreateProductDto
+            int productId = await _productRepository.AddAsync(new CreateProductDto
             {
                 Title = product.Title,
                 Description = product.Description,
@@ -39,7 +39,7 @@ namespace Ecommerce.API.Services.Products
         /// <inheritdoc />
         public async Task<GetProductResponseDto> GetProductByIdAsync(int id)
         {
-            var product = await _productRepository.GetProductByIdAsync(id);
+            var product = await _productRepository.GetByIdAsync(id);
 
             return product == null
                 ? throw new ProductNotFoundException(id)
@@ -61,7 +61,7 @@ namespace Ecommerce.API.Services.Products
                 Price = product.Price
             };
 
-            return await _productRepository.UpdateProductAsync(id, productForUpdate);
+            return await _productRepository.UpdateAsync(id, productForUpdate);
         }
 
         /// <inheritdoc />
@@ -72,14 +72,14 @@ namespace Ecommerce.API.Services.Products
                 throw new ProductNotFoundException(id);
             }
 
-            return await _productRepository.DeleteProductAsync(id);
+            return await _productRepository.DeleteAsync(id);
         }
 
         public async Task<PaginatedListResponseDto<GetProductResponseDto>> GetAllProductsAsync(GetListOfProductsRequestDto query)
         {
             var options = _mapper.Map<GetListOfProductsDto>(query);
 
-            var products = await _productRepository.GetAllProductsAsync(options);
+            var products = await _productRepository.GetAllAsync(options);
 
             var mappedProducts = _mapper.Map<IEnumerable<GetProductResponseDto>>(products);
 
