@@ -1,10 +1,17 @@
 using Ecommerce.API.DataEF.Context;
 using Ecommerce.API.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+// NOTE: Configure Serilog
+var serilog = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Services.AddSerilog(serilog);
 builder.Services.InitServices(configuration);
 
 var app = builder.Build();
